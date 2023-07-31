@@ -8,6 +8,10 @@ builder.Services.Configure<MongoDbSetting>(builder.Configuration.GetSection(name
 builder.Services.AddScoped<CatalogDbContext>();
 
 builder.Services.AddControllers();
+builder.Services.Configure<RouteOptions>(options =>
+{
+    options.LowercaseUrls = true;
+});
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

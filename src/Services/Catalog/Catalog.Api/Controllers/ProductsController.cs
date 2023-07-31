@@ -8,11 +8,11 @@ namespace Catalog.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class CatalogController : ControllerBase
+    public class ProductsController : ControllerBase
     {
         private readonly CatalogDbContext _catalogDbContext;
 
-        public CatalogController(CatalogDbContext catalogDbContext)
+        public ProductsController(CatalogDbContext catalogDbContext)
         {
             _catalogDbContext = catalogDbContext;
         }

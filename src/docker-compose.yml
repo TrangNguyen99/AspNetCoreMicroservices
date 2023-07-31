@@ -36,7 +36,7 @@ services:
       - discount_data:/var/lib/postgresql/data
     environment:
       - POSTGRES_USER=admin
-      - POSTGRES_PASSWORD=Admin$56789
+      - POSTGRES_PASSWORD=password123456
       - POSTGRES_DB=discountdb
     restart: always
 
