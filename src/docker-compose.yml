@@ -3,12 +3,42 @@
 version: '3.4'
 
 services:
+  portainer:
+    image: portainer/portainer-ce
+    ports:
+      - 9443:9443
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+    restart: always
+
   catalogdb:
     image: mongo
     ports:
       - 27017:27017
     volumes:
       - catalog_data:/data/db
+    restart: always
+
+  cartdb:
+    image: redis:alpine
+    ports:
+      - 6379:6379
+    volumes:
+      - cart_data:/data
+    restart: always
+
+  discountdb:
+    image: postgres
+    ports:
+      - 5432:5432
+    volumes:
+      - discount_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=Admin$56789
+      - POSTGRES_DB=discountdb
+    restart: always
 
   catalogapi:
     image: catalogapi
@@ -21,13 +51,6 @@ services:
       - MongoDbSetting:ConnectionString=mongodb://catalogdb:27017
     depends_on:
       - catalogdb
-
-  cartdb:
-    image: redis:alpine
-    ports:
-      - 6379:6379
-    volumes:
-      - cart_data:/data
 
   cartapi:
     image: cartapi
@@ -42,5 +65,7 @@ services:
       - cartdb
 
 volumes:
+  portainer_data:
   catalog_data:
   cart_data:
+  discount_data:
