@@ -12,13 +12,43 @@ services:
       - portainer_data:/data
     restart: always
 
+  redisinsight:
+    image: redislabs/redisinsight
+    ports:
+      - 8001:8001
+    volumes:
+      - redisinsight_data:/db
+    restart: always
+
+  pgadmin4:
+    image: dpage/pgadmin4
+    ports:
+      - 15432:80
+    volumes:
+      - pgadmin4_data:/var/lib/pgadmin
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@example.com
+      - PGADMIN_DEFAULT_PASSWORD=password123456
+    restart: always
+
   catalogdb:
     image: mongo
     ports:
       - 27017:27017
     volumes:
       - catalog_data:/data/db
+      - catalog_configsvr_data:/data/configdb
     restart: always
+
+  catalogdbui:
+    image: mongo-express
+    ports:
+      - 8081:8081
+    environment:
+      - ME_CONFIG_MONGODB_SERVER=catalogdb
+    restart: always
+    depends_on:
+      - catalogdb
 
   cartdb:
     image: redis:alpine
@@ -64,8 +94,23 @@ services:
     depends_on:
       - cartdb
 
+  discountapi:
+    image: discountapi
+    build:
+      context: .
+      dockerfile: Services/Discount/Discount.Api/Dockerfile
+    ports:
+      - 5002:80
+    environment:
+      - ConnectionStrings:postgresql=Host=discountdb;Port=5432;Database=discountdb;User ID=admin;Password=password123456;
+    depends_on:
+      - discountdb
+
 volumes:
   portainer_data:
+  redisinsight_data:
+  pgadmin4_data:
   catalog_data:
+  catalog_configsvr_data:
   cart_data:
   discount_data:

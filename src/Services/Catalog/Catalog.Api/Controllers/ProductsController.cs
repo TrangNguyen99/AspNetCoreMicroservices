@@ -25,9 +25,15 @@ namespace Catalog.Api.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Product>> GetProductById(string id)
+        public async Task<ActionResult<Product?>> GetProductById(string id)
         {
             var product = await _catalogDbContext.Products.Find(x => x.Id == id).FirstOrDefaultAsync();
+
+            if (product == null)
+            {
+                return NotFound();
+            }
+
             return Ok(product);
         }
 
@@ -48,22 +54,33 @@ namespace Catalog.Api.Controllers
         [HttpPut("{id}")]
         public async Task<ActionResult<Product>> UpdateProduct(string id, [FromBody] CreateOrUpdateProductInput input)
         {
-            var product = new Product
+            var newProduct = new Product
             {
                 Id = id,
                 Name = input.Name,
                 Price = input.Price
             };
 
-            await _catalogDbContext.Products.ReplaceOneAsync(x => x.Id == id, product);
+            var oldProduct = await _catalogDbContext.Products.FindOneAndReplaceAsync(x => x.Id == id, newProduct);
 
-            return Ok(product);
+            if (oldProduct == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(newProduct);
         }
 
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteProduct(string id)
         {
-            await _catalogDbContext.Products.DeleteOneAsync(x => x.Id == id);
+            var product = await _catalogDbContext.Products.FindOneAndDeleteAsync(x => x.Id == id);
+
+            if (product == null)
+            {
+                return NotFound();
+            }
+
             return Ok();
         }
     }
