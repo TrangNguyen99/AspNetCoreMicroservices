@@ -1,20 +1,11 @@
-using Catalog.Api.Configurations;
-using Catalog.Core.Data;
-using Microsoft.Extensions.Options;
-using MongoDB.Driver;
+using Catalog.Core.Configurations;
+using Catalog.Core.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.Configure<MongoDbSetting>(builder.Configuration.GetSection(nameof(MongoDbSetting)));
 
-builder.Services.AddScoped((serviceProvider) =>
-{
-    var mongoDbSetting = serviceProvider.GetRequiredService<IOptions<MongoDbSetting>>();
-    var mongoClient = new MongoClient(mongoDbSetting.Value.ConnectionString);
-    var mongoDatabase = mongoClient.GetDatabase(mongoDbSetting.Value.DatabaseName);
-
-    return new CatalogDbContext(mongoDatabase);
-});
+builder.Services.AddCatalogDbContext();
 
 builder.Services.AddControllers();
 builder.Services.Configure<RouteOptions>(options =>

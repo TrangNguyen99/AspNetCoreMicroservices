@@ -1,8 +1,7 @@
-namespace Catalog.Api.Dto
+namespace Catalog.Api.Dto;
+
+public class CreateOrUpdateProductInput
 {
-    public class CreateOrUpdateProductInput
-    {
-        public string Name { get; set; } = null!;
-        public int Price { get; set; }
-    }
+    public string Name { get; set; } = null!;
+    public int Price { get; set; }
 }
