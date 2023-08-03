@@ -1,6 +1,6 @@
-using Catalog.Api.Data;
 using Catalog.Api.Dto;
-using Catalog.Api.Entities;
+using Catalog.Core.Data;
+using Catalog.Core.Entities;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Driver;
 
@@ -48,7 +48,7 @@ namespace Catalog.Api.Controllers
 
             await _catalogDbContext.Products.InsertOneAsync(product);
 
-            return CreatedAtAction(nameof(GetProductById), new { Id = product.Id }, product);
+            return CreatedAtAction(nameof(GetProductById), new { product.Id }, product);
         }
 
         [HttpPut("{id}")]
