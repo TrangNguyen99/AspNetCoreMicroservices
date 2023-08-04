@@ -82,6 +82,18 @@ services:
     depends_on:
       - catalogdb
 
+  cataloggrpc:
+    image: cataloggrpc
+    build:
+      context: .
+      dockerfile: Services/Catalog/Catalog.Grpc/Dockerfile
+    ports:
+      - 6000:80
+    environment:
+      - MongoDbSetting:ConnectionString=mongodb://catalogdb:27017
+    depends_on:
+      - catalogdb
+
   cartapi:
     image: cartapi
     build:
@@ -91,6 +103,7 @@ services:
       - 5001:80
     environment:
       - RedisSetting:ConnectionString=cartdb:6379
+      - GrpcSetting:CatalogUrl=http://cataloggrpc
     depends_on:
       - cartdb
 

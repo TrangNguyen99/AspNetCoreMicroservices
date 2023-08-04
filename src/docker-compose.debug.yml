@@ -15,6 +15,18 @@ services:
     volumes:
       - ~/.vsdbg:/remote_debugger:rw
 
+  cataloggrpc:
+    image: cataloggrpc
+    build:
+      context: .
+      dockerfile: Services/Catalog/Catalog.Grpc/Dockerfile
+      args:
+        - configuration=Debug
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    volumes:
+      - ~/.vsdbg:/remote_debugger:rw
+
   cartapi:
     image: cartapi
     build:

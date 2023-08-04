@@ -1,9 +1,12 @@
-using Cart.Api.Entities;
+namespace Cart.Api.Dto;
 
-namespace Cart.Api.Dto
+public class UpdateCartInput
 {
-    public class UpdateCartInput
-    {
-        public List<CartItem> CartItems { get; set; } = null!;
-    }
+    public List<UpdateCartInput_CartItem> CartItems { get; set; } = null!;
+}
+
+public class UpdateCartInput_CartItem
+{
+    public string ProductId { get; set; } = null!;
+    public int Quantity { get; set; }
 }
