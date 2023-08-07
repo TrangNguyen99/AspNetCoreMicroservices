@@ -2,8 +2,8 @@ namespace Order.Domain.Entities;
 
 public interface IAuditedEntity<TPrimaryKey, TUserId> : IEntity<TPrimaryKey>
 {
-    public DateTime CreationTime { get; set; }
-    public TUserId? CreatorUserId { get; set; }
-    public DateTime? LastModificationTime { get; set; }
-    public TUserId? LastModifierUserId { get; set; }
+    DateTime CreationTime { get; set; }
+    TUserId? CreatorUserId { get; set; }
+    DateTime? LastModificationTime { get; set; }
+    TUserId? LastModifierUserId { get; set; }
 }
