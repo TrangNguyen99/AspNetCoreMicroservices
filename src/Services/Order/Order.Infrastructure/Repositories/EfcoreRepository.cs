@@ -1,10 +1,12 @@
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
+using Order.Application.Repositories;
 using Order.Domain.Entities;
 
-namespace Order.Application.Repositories;
+namespace Order.Infrastructure.Repositories;
 
-public class EfcoreRepository<TEntity, TPrimaryKey> : IRepository<TEntity, TPrimaryKey> where TEntity : class, IEntity<TPrimaryKey>
+public class EfcoreRepository<TEntity, TPrimaryKey> : IRepository<TEntity, TPrimaryKey>
+    where TEntity : class, IEntity<TPrimaryKey>
 {
     private readonly DbContext _dbContext;
 
