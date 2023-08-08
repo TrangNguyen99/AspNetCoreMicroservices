@@ -8,4 +8,5 @@ public class GetOrdersOutput
 public class GetOrdersOutput_Order
 {
     public Guid Id { get; set; }
+    public string UserId { get; set; } = null!;
 }

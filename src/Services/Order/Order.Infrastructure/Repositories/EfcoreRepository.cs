@@ -5,7 +5,7 @@ using Order.Domain.Entities;
 
 namespace Order.Infrastructure.Repositories;
 
-public class EfcoreRepository<TEntity, TPrimaryKey> : IRepository<TEntity, TPrimaryKey>
+public abstract class EfcoreRepository<TEntity, TPrimaryKey> : IRepository<TEntity, TPrimaryKey>
     where TEntity : class, IEntity<TPrimaryKey>
 {
     private readonly DbContext _dbContext;
@@ -33,6 +33,7 @@ public class EfcoreRepository<TEntity, TPrimaryKey> : IRepository<TEntity, TPrim
     public async Task<TEntity> InsertAsync(TEntity entity)
     {
         await _dbContext.Set<TEntity>().AddAsync(entity);
+        await _dbContext.SaveChangesAsync();
         return entity;
     }
 }

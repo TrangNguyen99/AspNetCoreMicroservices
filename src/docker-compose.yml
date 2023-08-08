@@ -70,6 +70,18 @@ services:
       - POSTGRES_DB=discountdb
     restart: always
 
+  orderdb:
+    image: postgres
+    ports:
+      - 5433:5432
+    volumes:
+      - order_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=password123456
+      - POSTGRES_DB=orderdb
+    restart: always
+
   catalogapi:
     image: catalogapi
     build:
@@ -119,6 +131,18 @@ services:
     depends_on:
       - discountdb
 
+  orderapi:
+    image: orderapi
+    build:
+      context: .
+      dockerfile: Services/Order/order.Api/Dockerfile
+    ports:
+      - 5003:80
+    environment:
+      - ConnectionStrings:postgresql=Host=orderdb;Port=5433;Database=orderdb;User ID=admin;Password=password123456;
+    depends_on:
+      - orderdb
+
 volumes:
   portainer_data:
   redisinsight_data:
@@ -127,3 +151,4 @@ volumes:
   catalog_configsvr_data:
   cart_data:
   discount_data:
+  order_data:

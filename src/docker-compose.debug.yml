@@ -50,3 +50,15 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
     volumes:
       - ~/.vsdbg:/remote_debugger:rw
+
+  orderapi:
+    image: orderapi
+    build:
+      context: .
+      dockerfile: Services/Order/Order.Api/Dockerfile
+      args:
+        - configuration=Debug
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    volumes:
+      - ~/.vsdbg:/remote_debugger:rw
