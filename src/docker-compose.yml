@@ -139,7 +139,7 @@ services:
     ports:
       - 5003:80
     environment:
-      - ConnectionStrings:postgresql=Host=orderdb;Port=5433;Database=orderdb;User ID=admin;Password=password123456;
+      - ConnectionStrings:postgresql=Host=orderdb;Port=5432;Database=orderdb;User ID=admin;Password=password123456;
     depends_on:
       - orderdb
 
