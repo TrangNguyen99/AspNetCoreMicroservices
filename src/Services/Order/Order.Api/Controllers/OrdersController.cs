@@ -9,9 +9,9 @@ namespace Order.Api.Controllers;
 [Route("[controller]")]
 public class OrdersController : ControllerBase
 {
-    private readonly Mediator _mediator;
+    private readonly IMediator _mediator;
 
-    public OrdersController(Mediator mediator)
+    public OrdersController(IMediator mediator)
     {
         _mediator = mediator;
     }
