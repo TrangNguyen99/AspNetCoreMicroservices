@@ -8,6 +8,7 @@ FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 ARG configuration=Release
 WORKDIR /src
 COPY ["Services/Order/Order.Api/Order.Api.csproj", "Services/Order/Order.Api/"]
+COPY ["MessageBus.Core/MessageBus.Core.csproj", "MessageBus.Core/"]
 COPY ["Services/Order/Order.Application/Order.Application.csproj", "Services/Order/Order.Application/"]
 COPY ["Services/Order/Order.Infrastructure/Order.Infrastructure.csproj", "Services/Order/Order.Infrastructure/"]
 RUN dotnet restore "Services/Order/Order.Api/Order.Api.csproj"

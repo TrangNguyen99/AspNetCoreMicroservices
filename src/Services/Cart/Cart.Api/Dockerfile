@@ -8,6 +8,7 @@ FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 ARG configuration=Release
 WORKDIR /src
 COPY ["Services/Cart/Cart.Api/Cart.Api.csproj", "Services/Cart/Cart.Api/"]
+COPY ["MessageBus.Core/MessageBus.Core.csproj", "MessageBus.Core/"]
 RUN dotnet restore "Services/Cart/Cart.Api/Cart.Api.csproj"
 COPY . .
 WORKDIR "/src/Services/Cart/Cart.Api"

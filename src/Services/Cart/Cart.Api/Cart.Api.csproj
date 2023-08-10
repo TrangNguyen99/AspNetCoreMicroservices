@@ -16,4 +16,8 @@
     <Protobuf Include="..\..\Catalog\Catalog.Grpc\Protos\*.proto" GrpcServices="Client" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\MessageBus.Core\MessageBus.Core.csproj" />
+  </ItemGroup>
+
 </Project>

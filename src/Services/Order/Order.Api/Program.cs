@@ -1,3 +1,5 @@
+using MessageBus.Core.Configurations;
+using MessageBus.Core.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Order.Api.Contracts;
 using Order.Application.Contracts;
@@ -7,6 +9,8 @@ using Order.Infrastructure.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.Configure<RabbitMqSetting>(builder.Configuration.GetSection(nameof(RabbitMqSetting)));
+
 builder.Services.AddApplicationServices();
 builder.Services.AddInfrastructureServices(builder.Configuration);
 
@@ -15,6 +19,8 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ICurrentUserProvider<string>, CurrentUserProvider>();
 
 builder.Services.AddControllers();
+
+builder.Services.AddMassTransitWithRabbitMq();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

@@ -4,7 +4,7 @@ version: '3.4'
 
 services:
   portainer:
-    image: portainer/portainer-ce
+    image: portainer/portainer-ce:alpine
     ports:
       - 9443:9443
     volumes:
@@ -29,6 +29,16 @@ services:
     environment:
       - PGADMIN_DEFAULT_EMAIL=admin@example.com
       - PGADMIN_DEFAULT_PASSWORD=password123456
+    restart: always
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    ports:
+      - 5672:5672
+      - 15672:15672
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    hostname: rabbitmq
     restart: always
 
   catalogdb:
@@ -59,7 +69,7 @@ services:
     restart: always
 
   discountdb:
-    image: postgres
+    image: postgres:alpine
     ports:
       - 5432:5432
     volumes:
@@ -71,7 +81,7 @@ services:
     restart: always
 
   orderdb:
-    image: postgres
+    image: postgres:alpine
     ports:
       - 5433:5432
     volumes:
@@ -116,8 +126,10 @@ services:
     environment:
       - RedisSetting:ConnectionString=cartdb:6379
       - GrpcSetting:CatalogUrl=http://cataloggrpc
+      - RabbitMqSetting:Host=rabbitmq
     depends_on:
       - cartdb
+      - rabbitmq
 
   discountapi:
     image: discountapi
@@ -140,13 +152,16 @@ services:
       - 5003:80
     environment:
       - ConnectionStrings:postgresql=Host=orderdb;Port=5432;Database=orderdb;User ID=admin;Password=password123456;
+      - RabbitMqSetting:Host=rabbitmq
     depends_on:
       - orderdb
+      - rabbitmq
 
 volumes:
   portainer_data:
   redisinsight_data:
   pgadmin4_data:
+  rabbitmq_data:
   catalog_data:
   catalog_configsvr_data:
   cart_data:

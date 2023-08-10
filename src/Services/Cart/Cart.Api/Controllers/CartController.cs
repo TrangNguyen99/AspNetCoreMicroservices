@@ -2,6 +2,8 @@ using System.Text.Json;
 using Cart.Api.Dto;
 using Cart.Api.Entities;
 using Catalog.Grpc.Protos;
+using MassTransit;
+using MessageBus.Core.Contracts;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Distributed;
 using static Catalog.Grpc.Protos.ProductGrpcService;
@@ -14,20 +16,25 @@ public class CartController : ControllerBase
 {
     private readonly IDistributedCache _distributedCache;
     private readonly ProductGrpcServiceClient _productGrpcServiceClient;
+    private readonly IPublishEndpoint _publishEndpoint;
 
-    public CartController(IDistributedCache distributedCache, ProductGrpcServiceClient productGrpcServiceClient)
+    public CartController(
+        IDistributedCache distributedCache,
+        ProductGrpcServiceClient productGrpcServiceClient,
+        IPublishEndpoint publishEndpoint)
     {
         _distributedCache = distributedCache;
         _productGrpcServiceClient = productGrpcServiceClient;
+        _publishEndpoint = publishEndpoint;
     }
 
-    [HttpGet("{username}")]
-    public async Task<ActionResult<ShoppingCart>> GetCart(string username)
+    [HttpGet]
+    public async Task<ActionResult<GetCartOutput>> GetCart([FromQuery] string userId)
     {
-        var cartJson = await _distributedCache.GetStringAsync(username);
+        var cartJson = await _distributedCache.GetStringAsync(userId);
         if (string.IsNullOrEmpty(cartJson))
         {
-            return Ok(new ShoppingCart { Username = username });
+            return Ok(new GetCartOutput { CartItems = new() });
         }
 
         var cart = JsonSerializer.Deserialize<ShoppingCart>(cartJson);
@@ -42,22 +49,30 @@ public class CartController : ControllerBase
 
         cart.CartItems = cart.CartItems.Where(x => replyProductIds.Contains(x.ProductId)).ToList();
 
-        cart.CartItems.ForEach(x =>
+        var resCart = new GetCartOutput
         {
-            var product = reply.Products.First(y => y.Id == x.ProductId);
-            x.ProductName = product.Name;
-            x.ProductPrice = product.Price;
-        });
+            CartItems = cart.CartItems.Select(x =>
+            {
+                var product = reply.Products.First(y => y.Id == x.ProductId);
+                return new GetCartOutputCartItem
+                {
+                    ProductId = x.ProductId,
+                    ProductName = product.Name,
+                    ProductPrice = product.Price,
+                    Quantity = x.Quantity
+                };
+            }).ToList()
+        };
 
-        return Ok(cart);
+        return Ok(resCart);
     }
 
-    [HttpPost("{username}")]
-    public async Task<ActionResult<ShoppingCart>> UpdateCart(string username, [FromBody] UpdateCartInput input)
+    [HttpPost]
+    public async Task<ActionResult<ShoppingCart>> UpdateCart([FromQuery] string userId, [FromBody] UpdateCartInput input)
     {
         var cart = new ShoppingCart
         {
-            Username = username,
+            UserId = userId,
             CartItems = input.CartItems.Select(x => new CartItem
             {
                 ProductId = x.ProductId,
@@ -66,15 +81,29 @@ public class CartController : ControllerBase
         };
 
         var cartJson = JsonSerializer.Serialize(cart);
-        await _distributedCache.SetStringAsync(username, cartJson);
+        await _distributedCache.SetStringAsync(userId, cartJson);
 
         return Ok(cart);
     }
 
-    [HttpDelete("{username}")]
-    public async Task<ActionResult> DeleteCart(string username)
+    [HttpDelete]
+    public async Task<ActionResult> DeleteCart([FromQuery] string userId)
     {
-        await _distributedCache.RemoveAsync(username);
+        await _distributedCache.RemoveAsync(userId);
         return Ok();
+    }
+
+    [HttpPost("checkout")]
+    public async Task<IActionResult> Checkout([FromQuery] string userId)
+    {
+        var message = new CartCheckoutEvent
+        {
+            UserId = userId,
+            CartItems = new()
+        };
+
+        await _publishEndpoint.Publish(message);
+
+        return Accepted();
     }
 }
