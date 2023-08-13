@@ -24,7 +24,7 @@ public static class IServiceCollectionExtension
                     h.Password("guest");
                 });
 
-                cfg.ConfigureEndpoints(context, new KebabCaseEndpointNameFormatter("", true));
+                cfg.ConfigureEndpoints(context, new DefaultEndpointNameFormatter(true));
             });
         });
 
